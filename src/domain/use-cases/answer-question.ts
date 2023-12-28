@@ -8,6 +8,6 @@ interface AnswerQuestionUseCaseRequest {
 
 export class AnswerQuestionUseCase {
 	execute(data: AnswerQuestionUseCaseRequest) {
-		return new Answer(data.content);
+		return new Answer({ authorId: data.questionId, ...data });
 	}
 }
