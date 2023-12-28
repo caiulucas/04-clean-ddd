@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest --dir tests/use-cases",
+    "test": "vitest run --dir tests/",
+    "test:watch": "vitest --dir tests/",
     "lint": "biome check --apply ."
   },
   "keywords": [],
