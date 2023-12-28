@@ -1,3 +1,5 @@
+import { Entity } from '../../../core/entities/entity';
+
 export class Slug {
 	public value: string;
 
