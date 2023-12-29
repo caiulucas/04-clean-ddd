@@ -1,24 +1,24 @@
-import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
-import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
+import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Answer Question Use Case', () => {
-	let questionsRepository: QuestionsRepository;
-	let sut: CreateQuestionUseCase;
+	let answersRepository: AnswersRepository;
+	let sut: AnswerQuestionUseCase;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
-		sut = new CreateQuestionUseCase(questionsRepository);
+		answersRepository = new InMemoryQuestionsRepository();
+		sut = new AnswerQuestionUseCase(answersRepository);
 	});
 
 	it('should be able to create an question', async () => {
-		const { question } = await sut.execute({
-			authorId: '1',
-			title: 'Test question',
+		const { answer } = await sut.execute({
+			instructorId: '1',
+			questionId: '1',
 			content:
 				'Hi, this is a testing content for this question. How are you doing today?',
 		});
 
-		expect(question.id).toBeTruthy();
+		expect(answer.id).toBeTruthy();
 	});
 });

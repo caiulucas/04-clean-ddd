@@ -3,7 +3,7 @@ import { Answer } from '@/domain/forum/enterprise/entities/answer';
 import { AnswersRepository } from '../repositories/answers-repository';
 
 interface AnswerQuestionUseCaseRequest {
-	instructionId: string;
+	instructorId: string;
 	questionId: string;
 	content: string;
 }
@@ -20,7 +20,7 @@ export class AnswerQuestionUseCase {
 	): Promise<AnswerQuestionUseCaseResponse> {
 		const answer = Answer.create({
 			...data,
-			authorId: new UniqueEntityId(data.instructionId),
+			authorId: new UniqueEntityId(data.instructorId),
 			questionId: new UniqueEntityId(data.questionId),
 		});
 
