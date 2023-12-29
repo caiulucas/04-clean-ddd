@@ -1,10 +1,8 @@
-import { Entity } from '../../../core/entities/entity';
-
 export class Slug {
-	public value: string;
+	private _value: string;
 
 	constructor(value: string) {
-		this.value = value;
+		this._value = value;
 	}
 
 	/**
@@ -26,5 +24,9 @@ export class Slug {
 			.replace(/-$/, '');
 
 		return new Slug(slugText);
+	}
+
+	get value() {
+		return this._value;
 	}
 }
