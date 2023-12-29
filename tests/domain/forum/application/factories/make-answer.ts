@@ -5,8 +5,8 @@ import { faker } from '@faker-js/faker';
 export function makeAnswer(
 	override?: Partial<AnswerProps>,
 	id?: UniqueEntityId,
-) {
-	const answer = Answer.create(
+): Answer {
+	return Answer.create(
 		{
 			authorId: new UniqueEntityId(),
 			questionId: new UniqueEntityId(),
@@ -15,6 +15,4 @@ export function makeAnswer(
 		},
 		id,
 	);
-
-	return answer;
 }
