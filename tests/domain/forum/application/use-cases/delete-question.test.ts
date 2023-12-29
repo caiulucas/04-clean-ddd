@@ -26,7 +26,7 @@ describe('Delete Question Use Case', () => {
 		expect(questionsRepository.items).toHaveLength(0);
 	});
 
-	it('should be not able to delete a question that was not created by the same author', async () => {
+	it('should be not able to delete a question from another', async () => {
 		const newQuestion = makeQuestion();
 
 		await questionsRepository.create(newQuestion);

@@ -1,43 +1,43 @@
-import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
-import { makeQuestion } from '../factories/make-question';
-import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
+import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
+import { makeAnswer } from '../factories/make-answer';
+import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
-describe('Delete Question Use Case', () => {
-	let questionsRepository: InMemoryQuestionsRepository;
-	let sut: DeleteQuestionUseCase;
+describe('Delete Answer Use Case', () => {
+	let answersRepository: InMemoryAnswersRepository;
+	let sut: DeleteAnswerUseCase;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
-		sut = new DeleteQuestionUseCase(questionsRepository);
+		answersRepository = new InMemoryAnswersRepository();
+		sut = new DeleteAnswerUseCase(answersRepository);
 	});
 
-	it('should be able to delete a question', async () => {
-		const newQuestion = makeQuestion();
+	it('should be able to delete a answer', async () => {
+		const newAnswer = makeAnswer();
 
-		await questionsRepository.create(newQuestion);
+		await answersRepository.create(newAnswer);
 
-		expect(questionsRepository.items).toHaveLength(1);
+		expect(answersRepository.items).toHaveLength(1);
 
 		await sut.execute({
-			questionId: newQuestion.id.toValue(),
-			authorId: newQuestion.authorId.toValue(),
+			answerId: newAnswer.id.toValue(),
+			authorId: newAnswer.authorId.toValue(),
 		});
 
-		expect(questionsRepository.items).toHaveLength(0);
+		expect(answersRepository.items).toHaveLength(0);
 	});
 
-	it('should be not able to delete a question that was not created by the same author', async () => {
-		const newQuestion = makeQuestion();
+	it('should be not able to delete a answer from another author', async () => {
+		const newAnswer = makeAnswer();
 
-		await questionsRepository.create(newQuestion);
+		await answersRepository.create(newAnswer);
 
 		await expect(
 			async () =>
 				await sut.execute({
-					questionId: newQuestion.id.toValue(),
+					answerId: newAnswer.id.toValue(),
 					authorId: 'some-author-id',
 				}),
 		).rejects.toThrowError();
-		expect(questionsRepository.items).toHaveLength(1);
+		expect(answersRepository.items).toHaveLength(1);
 	});
 });
