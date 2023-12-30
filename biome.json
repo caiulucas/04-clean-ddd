@@ -13,6 +13,9 @@
 			},
 			"nursery": {
 				"noUnusedImports": "error"
+			},
+			"correctness": {
+				"noUnusedVariables": "error"
 			}
 		}
 	},

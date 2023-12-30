@@ -16,11 +16,11 @@ export class CreateQuestionUseCase {
 	constructor(private questionsRepository: QuestionsRepository) {}
 
 	async execute(
-		data: CreateQuestionUseCaseRequest,
+		request: CreateQuestionUseCaseRequest,
 	): Promise<CreateQuestionUseCaseResponse> {
 		const question = Question.create({
-			...data,
-			authorId: new UniqueEntityId(data.authorId),
+			...request,
+			authorId: new UniqueEntityId(request.authorId),
 		});
 
 		await this.questionsRepository.create(question);
