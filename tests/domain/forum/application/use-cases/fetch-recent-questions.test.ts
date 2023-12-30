@@ -3,7 +3,7 @@ import { FetchRecentQuestions } from '@/domain/forum/application/use-cases/fetch
 import { makeQuestion } from '../factories/make-question';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
-describe('Get Question By Slug ', () => {
+describe('Fetch Recent Questions ', () => {
 	let questionsRepository: QuestionsRepository;
 	let sut: FetchRecentQuestions;
 
