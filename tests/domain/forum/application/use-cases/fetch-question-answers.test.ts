@@ -1,16 +1,16 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
-import { FetchQuestionAnswers } from '@/domain/forum/application/use-cases/fetch-question-answers';
+import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { makeAnswer } from '../factories/make-answer';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
 describe('Fetch Question Answers', () => {
 	let answersRepository: AnswersRepository;
-	let sut: FetchQuestionAnswers;
+	let sut: FetchQuestionAnswersUseCase;
 
 	beforeEach(() => {
 		answersRepository = new InMemoryAnswersRepository();
-		sut = new FetchQuestionAnswers(answersRepository);
+		sut = new FetchQuestionAnswersUseCase(answersRepository);
 
 		vi.useFakeTimers();
 	});
@@ -44,7 +44,7 @@ describe('Fetch Question Answers', () => {
 		expect(answers).toHaveLength(3);
 	});
 
-	it('should be able to fetch paginated recent questions', async () => {
+	it('should be able to fetch paginated answers', async () => {
 		for (let i = 0; i < 22; i++) {
 			await answersRepository.create(
 				makeAnswer({ questionId: new UniqueEntityId('question-1') }),
