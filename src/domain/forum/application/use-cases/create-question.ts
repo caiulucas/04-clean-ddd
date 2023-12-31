@@ -1,12 +1,14 @@
 import { Either, Right } from '@/core/either';
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Question } from '../../enterprise/entities/question';
+import { QuestionAttachment } from '../../enterprise/entities/question-attachment';
 import { QuestionsRepository } from '../repositories/questions-repository';
 
 interface CreateQuestionUseCaseRequest {
 	authorId: string;
 	title: string;
 	content: string;
+	attachmentsIds: string[];
 }
 
 type CreateQuestionUseCaseResponse = Either<
@@ -26,6 +28,15 @@ export class CreateQuestionUseCase {
 			...request,
 			authorId: new UniqueEntityId(request.authorId),
 		});
+
+		const attachments = request.attachmentsIds.map((attachmentId) =>
+			QuestionAttachment.create({
+				attachmentId: new UniqueEntityId(attachmentId),
+				questionId: question.id,
+			}),
+		);
+
+		question.attachments = attachments;
 
 		await this.questionsRepository.create(question);
 

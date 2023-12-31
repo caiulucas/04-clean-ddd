@@ -1,9 +1,9 @@
-import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Create Question Use Case', () => {
-	let questionsRepository: QuestionsRepository;
+	let questionsRepository: InMemoryQuestionsRepository;
 	let sut: CreateQuestionUseCase;
 
 	beforeEach(() => {
@@ -17,9 +17,19 @@ describe('Create Question Use Case', () => {
 			authorId: '1',
 			content:
 				'Hi, this is a testing content for this question. How are you doing today?',
+			attachmentsIds: ['1', '2'],
 		});
 
 		expect(result.isRight()).toBe(true);
-		expect(result.value?.question.id).toBeTruthy();
+		expect(questionsRepository.items[0]).toEqual(result.value?.question);
+		expect(questionsRepository.items[0].attachments).toHaveLength(2);
+		expect(questionsRepository.items[0].attachments).toEqual([
+			expect.objectContaining({
+				attachmentId: new UniqueEntityId('1'),
+			}),
+			expect.objectContaining({
+				attachmentId: new UniqueEntityId('2'),
+			}),
+		]);
 	});
 });
