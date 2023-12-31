@@ -1,15 +1,22 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer';
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
+import { makeAnswerAttachment } from '../factories/make-answer-attachment';
+import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
 describe('Edit Answer Use Case', () => {
 	let answersRepository: InMemoryAnswersRepository;
+	let answerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 	let sut: EditAnswerUseCase;
 
 	beforeEach(() => {
-		answersRepository = new InMemoryAnswersRepository();
-		sut = new EditAnswerUseCase(answersRepository);
+		answerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository();
+		answersRepository = new InMemoryAnswersRepository(
+			answerAttachmentsRepository,
+		);
+		sut = new EditAnswerUseCase(answersRepository, answerAttachmentsRepository);
 	});
 
 	it('should be able to edit a answer', async () => {
@@ -23,11 +30,39 @@ describe('Edit Answer Use Case', () => {
 			content: 'This is a new content',
 		};
 
-		await sut.execute(editedAnswer);
+		const firstAttachment = makeAnswerAttachment({
+			answerId: newAnswer.id,
+		});
+		const secondAttachment = makeAnswerAttachment({
+			answerId: newAnswer.id,
+		});
+
+		answerAttachmentsRepository.items.push(firstAttachment);
+		answerAttachmentsRepository.items.push(secondAttachment);
+
+		const newAttachmentId = new UniqueEntityId();
+
+		await sut.execute({
+			...editedAnswer,
+			attachmentIds: [
+				firstAttachment.attachmentId.toValue(),
+				newAttachmentId.toValue(),
+			],
+		});
 
 		expect(answersRepository.items[0]).toMatchObject({
 			content: editedAnswer.content,
 		});
+
+		expect(answersRepository.items[0].attachments.currentItems).toHaveLength(2);
+		expect(answersRepository.items[0].attachments.currentItems).toEqual([
+			expect.objectContaining({
+				attachmentId: firstAttachment.attachmentId,
+			}),
+			expect.objectContaining({
+				attachmentId: newAttachmentId,
+			}),
+		]);
 	});
 
 	it('should be not able to edit a answer from another author', async () => {
@@ -39,6 +74,7 @@ describe('Edit Answer Use Case', () => {
 			answerId: newAnswer.id.toValue(),
 			authorId: 'some-author-id',
 			content: 'This is a new content',
+			attachmentIds: [],
 		});
 
 		expect(result.isLeft()).toBe(true);

@@ -1,16 +1,20 @@
-import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer';
 import { makeAnswer } from '../factories/make-answer';
+import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
 import { InMemoryAnswerCommentsRepository } from '../repositories/in-memory-answer-comments-repository';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
 describe('Comment On Answer Use Case', () => {
-	let answersRepository: AnswersRepository;
+	let answersRepository: InMemoryAnswersRepository;
 	let answerCommentsRepository: InMemoryAnswerCommentsRepository;
+	let answerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 	let sut: CommentOnAnswerUseCase;
 
 	beforeEach(() => {
-		answersRepository = new InMemoryAnswersRepository();
+		answerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository();
+		answersRepository = new InMemoryAnswersRepository(
+			answerAttachmentsRepository,
+		);
 		answerCommentsRepository = new InMemoryAnswerCommentsRepository();
 		sut = new CommentOnAnswerUseCase(
 			answersRepository,

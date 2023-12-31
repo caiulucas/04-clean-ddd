@@ -2,14 +2,19 @@ import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { makeAnswer } from '../factories/make-answer';
+import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
 describe('Fetch Question Answers', () => {
 	let answersRepository: AnswersRepository;
+	let answerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 	let sut: FetchQuestionAnswersUseCase;
 
 	beforeEach(() => {
-		answersRepository = new InMemoryAnswersRepository();
+		answerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository();
+		answersRepository = new InMemoryAnswersRepository(
+			answerAttachmentsRepository,
+		);
 		sut = new FetchQuestionAnswersUseCase(answersRepository);
 
 		vi.useFakeTimers();

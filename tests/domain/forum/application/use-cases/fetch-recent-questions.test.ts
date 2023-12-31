@@ -1,14 +1,19 @@
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
 import { FetchRecentQuestions } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { makeQuestion } from '../factories/make-question';
+import { InMemoryQuestionAttachmentsRepository } from '../repositories/in-memory-question-attachments-repository';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Fetch Recent Questions ', () => {
 	let questionsRepository: QuestionsRepository;
+	let questionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
 	let sut: FetchRecentQuestions;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
+		questionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
+		questionsRepository = new InMemoryQuestionsRepository(
+			questionAttachmentsRepository,
+		);
 		sut = new FetchRecentQuestions(questionsRepository);
 
 		vi.useFakeTimers();

@@ -2,17 +2,27 @@ import { ChooseQuestionBestAnswer } from '@/domain/forum/application/use-cases/c
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
 import { makeQuestion } from '../factories/make-question';
+import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
+import { InMemoryQuestionAttachmentsRepository } from '../repositories/in-memory-question-attachments-repository';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Choose Question Best Answer Use Case', () => {
 	let questionsRepository: InMemoryQuestionsRepository;
 	let answersRepository: InMemoryAnswersRepository;
+	let answerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
+	let questionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
 	let sut: ChooseQuestionBestAnswer;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
-		answersRepository = new InMemoryAnswersRepository();
+		answerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository();
+		questionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
+		questionsRepository = new InMemoryQuestionsRepository(
+			questionAttachmentsRepository,
+		);
+		answersRepository = new InMemoryAnswersRepository(
+			answerAttachmentsRepository,
+		);
 		sut = new ChooseQuestionBestAnswer(questionsRepository, answersRepository);
 	});
 

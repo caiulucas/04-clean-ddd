@@ -1,14 +1,20 @@
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
+import { makeAnswerAttachment } from '../factories/make-answer-attachment';
+import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
 describe('Delete Answer Use Case', () => {
 	let answersRepository: InMemoryAnswersRepository;
+	let answerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 	let sut: DeleteAnswerUseCase;
 
 	beforeEach(() => {
-		answersRepository = new InMemoryAnswersRepository();
+		answerAttachmentsRepository = new InMemoryAnswerAttachmentsRepository();
+		answersRepository = new InMemoryAnswersRepository(
+			answerAttachmentsRepository,
+		);
 		sut = new DeleteAnswerUseCase(answersRepository);
 	});
 
@@ -17,7 +23,15 @@ describe('Delete Answer Use Case', () => {
 
 		await answersRepository.create(newAnswer);
 
-		expect(answersRepository.items).toHaveLength(1);
+		const firstAttachment = makeAnswerAttachment({
+			answerId: newAnswer.id,
+		});
+		const secondAttachment = makeAnswerAttachment({
+			answerId: newAnswer.id,
+		});
+
+		answerAttachmentsRepository.items.push(firstAttachment);
+		answerAttachmentsRepository.items.push(secondAttachment);
 
 		await sut.execute({
 			answerId: newAnswer.id.toValue(),
@@ -25,6 +39,7 @@ describe('Delete Answer Use Case', () => {
 		});
 
 		expect(answersRepository.items).toHaveLength(0);
+		expect(answerAttachmentsRepository.items).toHaveLength(0);
 	});
 
 	it('should be not able to delete a answer from another author', async () => {
