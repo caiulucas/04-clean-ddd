@@ -1,15 +1,23 @@
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestion } from '../factories/make-question';
+import { makeQuestionAttachment } from '../factories/make-question-attachment';
+import { InMemoryQuestionAttachmentsRepository } from '../repositories/in-memory-question-attachments-repository';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Edit Question Use Case', () => {
 	let questionsRepository: InMemoryQuestionsRepository;
+	let questionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
 	let sut: EditQuestionUseCase;
 
 	beforeEach(() => {
 		questionsRepository = new InMemoryQuestionsRepository();
-		sut = new EditQuestionUseCase(questionsRepository);
+		questionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
+		sut = new EditQuestionUseCase(
+			questionsRepository,
+			questionAttachmentsRepository,
+		);
 	});
 
 	it('should be able to edit a question', async () => {
@@ -24,12 +32,42 @@ describe('Edit Question Use Case', () => {
 			content: 'This is a new content',
 		};
 
-		await sut.execute(editedQuestion);
+		const firstAttachment = makeQuestionAttachment({
+			questionId: newQuestion.id,
+		});
+		const secondAttachment = makeQuestionAttachment({
+			questionId: newQuestion.id,
+		});
+
+		questionAttachmentsRepository.items.push(firstAttachment);
+		questionAttachmentsRepository.items.push(secondAttachment);
+
+		const newAttachmentId = new UniqueEntityId();
+
+		await sut.execute({
+			...editedQuestion,
+			attachmentsIds: [
+				firstAttachment.attachmentId.toValue(),
+				newAttachmentId.toValue(),
+			],
+		});
 
 		expect(questionsRepository.items[0]).toMatchObject({
 			title: editedQuestion.title,
 			content: editedQuestion.content,
 		});
+
+		expect(questionsRepository.items[0].attachments.currentItems).toHaveLength(
+			2,
+		);
+		expect(questionsRepository.items[0].attachments.currentItems).toEqual([
+			expect.objectContaining({
+				attachmentId: firstAttachment.attachmentId,
+			}),
+			expect.objectContaining({
+				attachmentId: newAttachmentId,
+			}),
+		]);
 	});
 
 	it('should be not able to edit a question from another author', async () => {
@@ -42,6 +80,7 @@ describe('Edit Question Use Case', () => {
 			authorId: 'some-author-id',
 			title: 'Edited question',
 			content: 'This is a new content',
+			attachmentsIds: [],
 		});
 
 		expect(result.isLeft()).toBe(true);

@@ -1,5 +1,9 @@
 import { Either, Left, Right } from '@/core/either';
+import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { Question } from '../../enterprise/entities/question';
+import { QuestionAttachment } from '../../enterprise/entities/question-attachment';
+import { QuestionAttachmentList } from '../../enterprise/entities/question-attachment-list';
+import { QuestionAttachmentsRepository } from '../repositories/question-attachments-repository';
 import { QuestionsRepository } from '../repositories/questions-repository';
 import { NotAllowedError } from './errors/not-allowed-error';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
@@ -9,6 +13,7 @@ interface EditQuestionUseCaseRequest {
 	questionId: string;
 	title: string;
 	content: string;
+	attachmentsIds: string[];
 }
 
 type EditQuestionUseCaseResponse = Either<
@@ -19,7 +24,10 @@ type EditQuestionUseCaseResponse = Either<
 >;
 
 export class EditQuestionUseCase {
-	constructor(private questionsRepository: QuestionsRepository) {}
+	constructor(
+		private questionsRepository: QuestionsRepository,
+		private questionAttachmentsRepository: QuestionAttachmentsRepository,
+	) {}
 
 	async execute(
 		request: EditQuestionUseCaseRequest,
@@ -36,6 +44,23 @@ export class EditQuestionUseCase {
 			return Left.create(new NotAllowedError());
 		}
 
+		const currentAttachments =
+			await this.questionAttachmentsRepository.findManyByQuestionId(
+				request.questionId,
+			);
+
+		const attachmentList = QuestionAttachmentList.create(currentAttachments);
+
+		const attachments = request.attachmentsIds.map((attachmentId) =>
+			QuestionAttachment.create({
+				attachmentId: new UniqueEntityId(attachmentId),
+				questionId: question.id,
+			}),
+		);
+
+		attachmentList.update(attachments);
+
+		question.attachments = attachmentList;
 		question.title = request.title;
 		question.content = request.content;
 
