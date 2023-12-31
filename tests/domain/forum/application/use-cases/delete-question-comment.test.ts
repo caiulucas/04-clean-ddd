@@ -1,4 +1,5 @@
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestionComment } from '../factories/make-question-comment';
 import { InMemoryQuestionCommentsRepository } from '../repositories/in-memory-question-comments-repository';
 
@@ -31,13 +32,13 @@ describe('Delete Question Comment Use Case', () => {
 
 		await questionCommentsRepository.create(questionComment);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					authorId: 'some-author-id',
-					questionCommentId: questionComment.id.toValue(),
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			authorId: 'some-author-id',
+			questionCommentId: questionComment.id.toValue(),
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 
 		expect(questionCommentsRepository.items).toHaveLength(1);
 	});

@@ -1,4 +1,5 @@
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
@@ -31,13 +32,13 @@ describe('Delete Answer Use Case', () => {
 
 		await answersRepository.create(newAnswer);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					answerId: newAnswer.id.toValue(),
-					authorId: 'some-author-id',
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			answerId: newAnswer.id.toValue(),
+			authorId: 'some-author-id',
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 		expect(answersRepository.items).toHaveLength(1);
 	});
 });

@@ -1,4 +1,5 @@
 import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
 
@@ -34,13 +35,13 @@ describe('Edit Answer Use Case', () => {
 
 		await answersRepository.create(newAnswer);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					answerId: newAnswer.id.toValue(),
-					authorId: 'some-author-id',
-					content: 'This is a new content',
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			answerId: newAnswer.id.toValue(),
+			authorId: 'some-author-id',
+			content: 'This is a new content',
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 	});
 });

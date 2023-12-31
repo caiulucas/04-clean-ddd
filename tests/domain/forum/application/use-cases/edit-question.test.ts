@@ -1,4 +1,5 @@
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestion } from '../factories/make-question';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
@@ -36,14 +37,14 @@ describe('Edit Question Use Case', () => {
 
 		await questionsRepository.create(newQuestion);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					questionId: newQuestion.id.toValue(),
-					authorId: 'some-author-id',
-					title: 'Edited question',
-					content: 'This is a new content',
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			questionId: newQuestion.id.toValue(),
+			authorId: 'some-author-id',
+			title: 'Edited question',
+			content: 'This is a new content',
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 	});
 });

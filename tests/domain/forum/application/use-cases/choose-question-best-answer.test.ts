@@ -1,4 +1,5 @@
 import { ChooseQuestionBestAnswer } from '@/domain/forum/application/use-cases/choose-quetion-best-answer';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
 import { makeQuestion } from '../factories/make-question';
 import { InMemoryAnswersRepository } from '../repositories/in-memory-answers-repository';
@@ -44,13 +45,13 @@ describe('Choose Question Best Answer Use Case', () => {
 		await questionsRepository.create(question);
 		await answersRepository.create(answer);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					authorId: 'some-author-id',
-					answerId: answer.id.toValue(),
-					questionId: question.id.toValue(),
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			authorId: 'some-author-id',
+			answerId: answer.id.toValue(),
+			questionId: question.id.toValue(),
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 	});
 });

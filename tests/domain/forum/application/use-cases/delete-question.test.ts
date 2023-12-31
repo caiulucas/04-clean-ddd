@@ -1,4 +1,5 @@
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestion } from '../factories/make-question';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
@@ -31,13 +32,13 @@ describe('Delete Question Use Case', () => {
 
 		await questionsRepository.create(newQuestion);
 
-		await expect(
-			async () =>
-				await sut.execute({
-					questionId: newQuestion.id.toValue(),
-					authorId: 'some-author-id',
-				}),
-		).rejects.toThrowError();
+		const result = await sut.execute({
+			questionId: newQuestion.id.toValue(),
+			authorId: 'some-author-id',
+		});
+
+		expect(result.isLeft()).toBe(true);
+		expect(result.value).toBeInstanceOf(NotAllowedError);
 		expect(questionsRepository.items).toHaveLength(1);
 	});
 });

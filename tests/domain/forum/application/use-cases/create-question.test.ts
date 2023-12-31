@@ -12,13 +12,14 @@ describe('Create Question Use Case', () => {
 	});
 
 	it('should be able to create an answer', async () => {
-		const { question } = await sut.execute({
+		const result = await sut.execute({
 			title: 'Answer test',
 			authorId: '1',
 			content:
 				'Hi, this is a testing content for this question. How are you doing today?',
 		});
 
-		expect(question.id).toBeTruthy();
+		expect(result.isRight()).toBe(true);
+		expect(result.value?.question.id).toBeTruthy();
 	});
 });
