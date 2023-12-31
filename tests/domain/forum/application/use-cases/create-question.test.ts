@@ -1,13 +1,18 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
+import { InMemoryQuestionAttachmentsRepository } from '../repositories/in-memory-question-attachments-repository';
 import { InMemoryQuestionsRepository } from '../repositories/in-memory-questions-repository';
 
 describe('Create Question Use Case', () => {
 	let questionsRepository: InMemoryQuestionsRepository;
+	let questionAttachmentsRepository: InMemoryQuestionAttachmentsRepository;
 	let sut: CreateQuestionUseCase;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
+		questionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
+		questionsRepository = new InMemoryQuestionsRepository(
+			questionAttachmentsRepository,
+		);
 		sut = new CreateQuestionUseCase(questionsRepository);
 	});
 

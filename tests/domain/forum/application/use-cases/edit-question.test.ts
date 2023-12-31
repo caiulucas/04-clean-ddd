@@ -12,8 +12,10 @@ describe('Edit Question Use Case', () => {
 	let sut: EditQuestionUseCase;
 
 	beforeEach(() => {
-		questionsRepository = new InMemoryQuestionsRepository();
 		questionAttachmentsRepository = new InMemoryQuestionAttachmentsRepository();
+		questionsRepository = new InMemoryQuestionsRepository(
+			questionAttachmentsRepository,
+		);
 		sut = new EditQuestionUseCase(
 			questionsRepository,
 			questionAttachmentsRepository,

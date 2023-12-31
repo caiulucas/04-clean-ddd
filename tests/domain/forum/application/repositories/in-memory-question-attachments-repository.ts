@@ -15,4 +15,10 @@ export class InMemoryQuestionAttachmentsRepository
 			(item) => item.questionId.toValue() === questionId,
 		);
 	}
+
+	async deleteManyByQuestionId(questionId: string) {
+		this.items = this.items.filter(
+			(item) => item.questionId.toValue() !== questionId,
+		);
+	}
 }
