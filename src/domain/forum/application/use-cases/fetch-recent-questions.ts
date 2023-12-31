@@ -1,3 +1,4 @@
+import { Either, Right } from '@/core/either';
 import { Question } from '../../enterprise/entities/question';
 import { QuestionsRepository } from '../repositories/questions-repository';
 
@@ -5,10 +6,12 @@ interface FetchRecentQuestionsRequest {
 	page: number;
 }
 
-interface FetchRecentQuestionsResponse {
-	questions: Question[];
-}
-
+type FetchRecentQuestionsResponse = Either<
+	null,
+	{
+		questions: Question[];
+	}
+>;
 export class FetchRecentQuestions {
 	constructor(private questionsRepository: QuestionsRepository) {}
 
@@ -19,6 +22,6 @@ export class FetchRecentQuestions {
 			page: data.page,
 		});
 
-		return { questions };
+		return Right.create({ questions });
 	}
 }
