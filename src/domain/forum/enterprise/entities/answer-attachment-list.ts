@@ -7,6 +7,6 @@ export class AnswerAttachmentList extends WatchedList<AnswerAttachment> {
 	}
 
 	protected compareItems(a: AnswerAttachment, b: AnswerAttachment) {
-		return a.attachmentId === b.attachmentId;
+		return a.equals(b);
 	}
 }

@@ -13,4 +13,11 @@ export abstract class Entity<T> {
 	get id() {
 		return this._id;
 	}
+
+	public equals(entity: Entity<T>): boolean {
+		if (entity === this || this._id === entity.id) {
+			return true;
+		}
+		return false;
+	}
 }
