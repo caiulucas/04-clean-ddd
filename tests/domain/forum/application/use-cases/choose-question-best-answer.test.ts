@@ -1,5 +1,5 @@
-import { ChooseQuestionBestAnswer } from '@/domain/forum/application/use-cases/choose-quetion-best-answer';
-import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
+import { NotAllowedError } from '@/core/errors/not-allowed-error';
+import { ChooseQuestionBestAnswer } from '@/domain/forum/application/use-cases/choose-question-best-answer';
 import { makeAnswer } from '../factories/make-answer';
 import { makeQuestion } from '../factories/make-question';
 import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';

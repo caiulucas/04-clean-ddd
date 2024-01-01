@@ -1,5 +1,5 @@
+import { NotAllowedError } from '@/core/errors/not-allowed-error';
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
-import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestion } from '../factories/make-question';
 import { makeQuestionAttachment } from '../factories/make-question-attachment';
 import { InMemoryQuestionAttachmentsRepository } from '../repositories/in-memory-question-attachments-repository';

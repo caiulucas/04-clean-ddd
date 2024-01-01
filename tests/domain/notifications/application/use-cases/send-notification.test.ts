@@ -10,7 +10,7 @@ describe('Send Notification Use Case', () => {
 		sut = new SendNotificationUseCase(notificationsRepository);
 	});
 
-	it('should be able to create an answer', async () => {
+	it('should be able to send a notification', async () => {
 		const result = await sut.execute({
 			recipientId: '1',
 			title: 'Notification test',

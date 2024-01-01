@@ -1,5 +1,5 @@
+import { NotAllowedError } from '@/core/errors/not-allowed-error';
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment';
-import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeQuestionComment } from '../factories/make-question-comment';
 import { InMemoryQuestionCommentsRepository } from '../repositories/in-memory-question-comments-repository';
 

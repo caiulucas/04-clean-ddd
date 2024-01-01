@@ -1,5 +1,5 @@
+import { NotAllowedError } from '@/core/errors/not-allowed-error';
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
-import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error';
 import { makeAnswer } from '../factories/make-answer';
 import { makeAnswerAttachment } from '../factories/make-answer-attachment';
 import { InMemoryAnswerAttachmentsRepository } from '../repositories/in-memory-answer-attachments-repository';
